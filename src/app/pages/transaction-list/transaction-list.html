@@ -1,0 +1,53 @@
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Monthly Money Manager</ion-title>
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content fullscreen="true">
+
+  <ng-container *ngIf="breakUps$ | async as breakUps;">
+    <ion-list>
+
+      <ion-item-sliding *ngFor="let breakUp of breakUps" #slidingItem>
+        <ion-item>
+          <ion-label>{{breakUp.label}}</ion-label>
+          <ion-button color="danger" (click)="presentAddNewTransaction(breakUp,true, slidingItem)">Edit</ion-button>
+          <ion-button (click)="presentTransactionBreakups(breakUp,true, slidingItem)">Breakups</ion-button>
+        </ion-item>
+        <!--<ion-item-options side="end">
+          <ion-item-option color="danger" (click)="presentAddNewTransaction(breakUp,true, slidingItem)">
+            &nbsp; &nbsp; &nbsp; Edit &nbsp; &nbsp; &nbsp;
+          </ion-item-option>
+          <ion-item-option (click)="presentTransactionBreakups(breakUp,true, slidingItem)">Breakups</ion-item-option>
+        </ion-item-options>-->
+      </ion-item-sliding>
+
+    </ion-list>
+
+    <ion-list-header [hidden]="breakUps.length > 0">
+      No Sessions Found
+    </ion-list-header>
+
+  </ng-container>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="presentAddNewTransaction(getNewTransactionDetails(),false, null)">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-segment [(ngModel)]="transactionType" (ionChange)="updateTransactionType()">
+      <ion-segment-button value="income">Income</ion-segment-button>
+      <ion-segment-button value="expenses">Expenses</ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-footer>

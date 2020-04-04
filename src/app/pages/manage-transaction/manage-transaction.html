@@ -1,0 +1,93 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title size="large" *ngIf="!isUpdate">Add New Transaction</ion-title>
+    <ion-title size="large" *ngIf="isUpdate">Update Transaction</ion-title>
+    <ion-title size="small">
+      {{getSubTitle()}}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen="true">
+
+  <ng-container *ngIf="fireAuth.user | async as user;">
+    <form #sampleForm="ngForm">
+      <ion-list>
+
+        <ion-item>
+          <ion-label position="floating">Transaction Type</ion-label>
+          <ion-select required placeholder="Select One"  [(ngModel)]="data.type" name="type">
+            <ion-select-option value="income">Income</ion-select-option>
+            <ion-select-option value="expenses">Expenses</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Transaction Name</ion-label>
+          <ion-input required [(ngModel)]="data.label" name="label"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Transaction Amount</ion-label>
+          <ion-input required type="number" [(ngModel)]="data.amount" name="amount"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Repeat</ion-label>
+          <ion-select required placeholder="Select One"  [(ngModel)]="data.repeat" name="repeat" (ionChange)="resetInterval(intervalController)">
+            <ion-select-option value="never">Never Repeat</ion-select-option>
+            <ion-select-option value="daily">Daily</ion-select-option>
+            <ion-select-option value="weekly">Weekly</ion-select-option>
+            <ion-select-option value="monthly">Monthly</ion-select-option>
+            <ion-select-option value="yearly">Yearly</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item class="d-inline-block w-50" style="border-top: none !important" [hidden]="sampleForm.value.repeat === 'never'">
+          <ion-label class="d-none" position="floating">Interval</ion-label>
+          <ion-select required name="interval" [(ngModel)]="data.interval" placeholder="Select Interval" #intervalController [disabled]="sampleForm.value.repeat === 'never'">
+            <ion-select-option *ngFor="let option of getIntervalOptions(sampleForm.value.repeat)" [value]="option.value">{{option.label}}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">
+            {{(sampleForm.value.repeat === 'never') ? 'Transaction Due Date' : 'Transaction Start Date'}}
+          </ion-label>
+          <ion-datetime required name="startDate" [(ngModel)]="data.startDate" displayFormat="MMMM-DD-YYYY" placeholder="Select Date"></ion-datetime>
+        </ion-item>
+
+        <ion-item [hidden]="sampleForm.value.repeat === 'never'">
+          <ion-label position="floating">Transaction End Date</ion-label>
+          <ion-datetime required name="endDate" [disabled]="sampleForm.value.repeat === 'never'" [(ngModel)]="data.endDate" displayFormat="MMMM-DD-YYYY" placeholder="Select Date"></ion-datetime>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Is Tax Savings</ion-label>
+          <ion-toggle name="isTaxSavings" [(ngModel)]="data.isTaxSavings"></ion-toggle>
+        </ion-item>
+
+
+        <ion-item>
+          <ion-label position="floating">Transaction Remarks</ion-label>
+          <ion-textarea name="remarks" [(ngModel)]="data.remarks"></ion-textarea>
+        </ion-item>
+
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-button expand="block" (click)="saveData(sampleForm.value,user.providerData[0].uid)" [disabled]="sampleForm.invalid" class="ion-margin">Save</ion-button>
+            </ion-col>
+            <ion-col>
+              <ion-button expand="block" color="dark" (click)="dismiss(data)" class="ion-margin">Close</ion-button>
+            </ion-col>
+            <ion-col *ngIf="isUpdate">
+              <ion-button expand="block" color="danger" (click)="deleteTransaction()" class="ion-margin">Delete</ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-list>
+    </form>
+
+  </ng-container>
+</ion-content>

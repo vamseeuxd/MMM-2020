@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+    <ion-title>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list>
+    <ng-container *ngIf="fireAuth.user | async as user; else showLogin">
+      <ion-item class="ion-text-center" lines="none">
+        <ion-avatar class="profile-picture">
+          <img [src]="user.photoURL">
+        </ion-avatar>
+
+      </ion-item>
+
+      <ion-item lines="none">
+        <h4 style="margin: auto;">{{user.displayName}}</h4>
+      </ion-item>
+
+      <ion-item lines="none">
+        <h5 style="margin: auto;">{{user.email}}</h5>
+      </ion-item>
+
+      <ion-item lines="none">
+        <!--Logout Button-->
+        <ion-button style="margin: auto;" type="button" (click)="logout()">
+          <ion-icon slot="start" name="log-out-outline"></ion-icon>
+          Logout
+        </ion-button>
+      </ion-item>
+    </ng-container>
+
+    <ng-template #showLogin>
+      <div class="login-logo">
+        <img src="assets/img/appicon.svg" alt="Ionic logo">
+      </div>
+      <!--Google Login Button-->
+      <ion-button type="button" class="ion-margin" (click)="login()" size="large" expand="block" color="danger">
+        <ion-icon slot="start" name="logo-google"></ion-icon>
+        Login with Google
+      </ion-button>
+    </ng-template>
+  </ion-list>
+
+</ion-content>

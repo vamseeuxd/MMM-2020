@@ -1,0 +1,52 @@
+<ion-header translucent="true">
+  <ion-toolbar>
+    <ion-title size="large">{{data.label}} Breakups</ion-title>
+    <ion-title size="small">
+      {{getSubTitle()}}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list *ngIf="finalSettlements$ | async as settlements">
+
+    <ion-item *ngFor="let breakUp of settlements">
+      <ion-label>
+        <ion-row>
+          <ion-col>
+            <ion-text color="dark">
+              <h2>
+                <strong>{{breakUp.label}}</strong>
+              </h2>
+            </ion-text>
+            <ion-text color="medium">
+              <p>{{breakUp.type}}</p>
+            </ion-text>
+          </ion-col>
+          <ion-col>
+            <ion-text color="medium" align="right">
+              <p>{{breakUp.dueOn|date:'MMMM dd yyyy'}}</p>
+            </ion-text>
+            <ion-text [color]="breakUp.isSettled?'success':'danger'" align="right">
+              <h2><strong>{{breakUp.amount|currency}}</strong></h2>
+            </ion-text>
+          </ion-col>
+        </ion-row>
+      </ion-label>
+      <ion-toggle color="success" (ionChange)="updateSettlement(breakUp)" mode="ios" slot="start" [(ngModel)]="breakUp.isSettled"></ion-toggle>
+    </ion-item>
+
+
+
+  </ion-list>
+
+</ion-content>
+
+<ion-footer translucent="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button class="dark" (click)="dismiss()">Cancel</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>
