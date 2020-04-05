@@ -14,6 +14,8 @@ export class ManageTransactionPage {
   private transactionsCollection: AngularFirestoreCollection<Transaction> = this.firestore.collection<any>('transactions');
   data: Transaction;
   isUpdate = false;
+  maxDate;
+  minDate;
 
   constructor(
     public toastCtrl: ToastController,
@@ -24,8 +26,18 @@ export class ManageTransactionPage {
     public navParams: NavParams,
     private firestore: AngularFirestore
   ) {
+    this.setMinMaxDates();
     this.data = this.navParams.get('transactionDetails') as Transaction;
     this.isUpdate = this.navParams.get('isUpdate');
+  }
+
+  setMinMaxDates() {
+    const maxDate = new Date();
+    const minDate = new Date();
+    maxDate.setFullYear(new Date().getFullYear() + 30);
+    minDate.setFullYear(new Date().getFullYear() - 30);
+    this.maxDate = maxDate.toISOString();
+    this.minDate = minDate.toISOString();
   }
 
   resetInterval(intervalController) {
