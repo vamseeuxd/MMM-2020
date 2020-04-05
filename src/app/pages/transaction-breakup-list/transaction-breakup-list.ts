@@ -7,6 +7,7 @@ import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firest
 import {map, switchMap, tap} from 'rxjs/operators';
 import {of} from 'rxjs';
 import {AngularFireAuth} from '@angular/fire/auth';
+import {getRecurringTransactionTitle} from '../../utils/mmm-utils';
 
 
 @Component({
@@ -77,24 +78,8 @@ export class TransactionBreakupListPage {
     this.modalCtrl.dismiss(data);
   }
 
-  getSubTitle() {
-    switch (this.data.repeat) {
-      case 'never':
-        return `this is only time ${this.data.type}`;
-        break;
-      case 'daily':
-        return `this ${this.data.type} is for every ${this.data.interval}  days`;
-        break;
-      case 'weekly':
-        return `this ${this.data.type} is for every ${this.data.interval}  weeks`;
-        break;
-      case 'monthly':
-        return `this ${this.data.type} is for every ${this.data.interval}  months`;
-        break;
-      case 'yearly':
-        return `this ${this.data.type} is for every ${this.data.interval}  years`;
-        break;
-    }
+  getSubTitle(repeat, type, interval) {
+    return getRecurringTransactionTitle(repeat, type, interval);
   }
 
   saveBreakups() {
@@ -102,7 +87,7 @@ export class TransactionBreakupListPage {
   }
 
   async updateSettlement(breakUp: any) {
-    if(this.isDataInit) {
+    if (this.isDataInit) {
       if (breakUp.id && !breakUp.isSettled) {
         const loading = await this.loadingController.create({message: 'Please wait...'});
         await loading.present();

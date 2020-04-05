@@ -3,6 +3,7 @@ import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firest
 import {AngularFireAuth} from '@angular/fire/auth';
 import {AlertController, LoadingController, ModalController, NavParams, ToastController} from '@ionic/angular';
 import {Transaction} from '../../models/Transaction';
+import {getRecurringTransactionTitle} from '../../utils/mmm-utils';
 
 @Component({
   selector: 'page-speaker-list',
@@ -26,17 +27,18 @@ export class ManageTransactionPage {
     public navParams: NavParams,
     private firestore: AngularFirestore
   ) {
-    this.setMinMaxDates();
     this.data = this.navParams.get('transactionDetails') as Transaction;
     this.isUpdate = this.navParams.get('isUpdate');
+    this.setMinMaxDates();
   }
 
   setMinMaxDates() {
     const maxDate = new Date();
-    const minDate = new Date();
     maxDate.setFullYear(new Date().getFullYear() + 30);
-    minDate.setFullYear(new Date().getFullYear() - 30);
     this.maxDate = maxDate.toISOString();
+
+    const minDate = new Date();
+    minDate.setFullYear(new Date().getFullYear() - 30);
     this.minDate = minDate.toISOString();
   }
 
@@ -149,46 +151,42 @@ export class ManageTransactionPage {
   }
 
   async saveData(item: any, userUid) {
-    const alert = await this.alertController.create({
-      header: 'Save Confirmation',
-      message: 'Are you sure! do you want to save this Transaction?',
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary',
-          handler: (blah) => {
-            console.log('Confirm Cancel: blah');
+    if (new Date(item.startDate) <= new Date(item.endDate)) {
+      const alert = await this.alertController.create({
+        header: 'Save Confirmation',
+        message: 'Are you sure! do you want to save this Transaction?',
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel',
+            cssClass: 'secondary',
+            handler: (blah) => {
+              console.log('Confirm Cancel: blah');
+            }
+          }, {
+            text: 'Okay',
+            handler: () => {
+              this.saveDataOnConfirmation(item, userUid);
+            }
           }
-        }, {
-          text: 'Okay',
-          handler: () => {
-            this.saveDataOnConfirmation(item, userUid);
-          }
+        ]
+      });
+      await alert.present();
+    } else {
+      const alert = await this.alertController.create({
+        header: 'Invalid Dates',
+        message: 'End Date should be greater than Start Date?',
+        buttons: [{
+          text: 'Okay'
         }
-      ]
-    });
-    await alert.present();
+        ]
+      });
+      await alert.present();
+    }
   }
 
-  getSubTitle() {
-    switch (this.data.repeat) {
-      case 'never':
-        return `This ${this.data.type} is only one time ${this.data.type}`;
-        break;
-      case 'daily':
-        return `This ${this.data.type} is for every ${this.data.interval}  ${this.data.interval === 1 ? 'day' : 'days'}.`;
-        break;
-      case 'weekly':
-        return `This ${this.data.type} is for every ${this.data.interval}  ${this.data.interval === 1 ? 'week' : 'weeks'}.`;
-        break;
-      case 'monthly':
-        return `This ${this.data.type} is for every ${this.data.interval}  ${this.data.interval === 1 ? 'month' : 'months'}.`;
-        break;
-      case 'yearly':
-        return `This ${this.data.type} is for every ${this.data.interval}  ${this.data.interval === 1 ? 'year' : 'years'}.`;
-        break;
-    }
+  getSubTitle(repeat, type, interval) {
+    return getRecurringTransactionTitle(repeat, type, interval);
   }
 
   resetData() {

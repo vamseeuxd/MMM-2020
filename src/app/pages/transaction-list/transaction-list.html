@@ -3,7 +3,8 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Monthly Money Manager</ion-title>
+    <ion-title size="small">Monthly Money Manager</ion-title>
+    <ion-title size="large">All Transactions</ion-title>
   </ion-toolbar>
 
 </ion-header>
@@ -13,18 +14,34 @@
   <ng-container *ngIf="breakUps$ | async as breakUps;">
     <ion-list>
 
-      <ion-item-sliding *ngFor="let breakUp of breakUps" #slidingItem>
+      <ion-item-sliding #slidingItem
+                        *ngFor="let breakUp of breakUps">
         <ion-item>
-          <ion-label>{{breakUp.label}}</ion-label>
-          <ion-button color="danger" (click)="presentAddNewTransaction(breakUp,true, slidingItem)">Edit</ion-button>
-          <ion-button (click)="presentTransactionBreakups(breakUp,true, slidingItem)">Breakups</ion-button>
+          <ion-label>
+            <ion-label><strong>{{breakUp.label}} ({{breakUp.breakups.length}})</strong></ion-label>
+            <p class="ion-no-margin">{{getTransactionSubTitle(breakUp.repeat, breakUp.type, breakUp.interval)}}</p>
+            <p class="ion-no-margin ion-margin-bottom">{{breakUp.startDate|date:'MMM-dd-yyyy'}}
+              to {{breakUp.endDate|date:'MMM-dd-yyyy'}}</p>
+          </ion-label>
+          <ion-label color="primary"
+                     style="position: absolute;right: 15px;top: 5px;">
+            <small>{{breakUp.repeat|lowercase}}&nbsp;</small>
+            {{breakUp.amount|currency}}
+          </ion-label>
+          <ion-label color="primary"
+                     style="position: absolute;right: 15px;bottom: 5px;">
+            <small>total&nbsp;</small>
+            {{breakUp.amount * breakUp.breakups.length|currency}}
+          </ion-label>
+          <!--<ion-label style="position: absolute;right: 15px;bottom: 15px;" color="primary">{{breakUp.breakups.length}}</ion-label>-->
         </ion-item>
-        <!--<ion-item-options side="end">
-          <ion-item-option color="danger" (click)="presentAddNewTransaction(breakUp,true, slidingItem)">
+        <ion-item-options side="end">
+          <ion-item-option (click)="presentAddNewTransaction(breakUp,true, slidingItem)"
+                           color="danger">
             &nbsp; &nbsp; &nbsp; Edit &nbsp; &nbsp; &nbsp;
           </ion-item-option>
           <ion-item-option (click)="presentTransactionBreakups(breakUp,true, slidingItem)">Breakups</ion-item-option>
-        </ion-item-options>-->
+        </ion-item-options>
       </ion-item-sliding>
 
     </ion-list>
@@ -35,7 +52,9 @@
 
   </ng-container>
 
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab horizontal="end"
+           slot="fixed"
+           vertical="bottom">
     <ion-fab-button (click)="presentAddNewTransaction(getNewTransactionDetails(),false, null)">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
@@ -45,7 +64,8 @@
 
 <ion-footer>
   <ion-toolbar>
-    <ion-segment [(ngModel)]="transactionType" (ionChange)="updateTransactionType()">
+    <ion-segment (ionChange)="updateTransactionType()"
+                 [(ngModel)]="transactionType">
       <ion-segment-button value="income">Income</ion-segment-button>
       <ion-segment-button value="expenses">Expenses</ion-segment-button>
     </ion-segment>

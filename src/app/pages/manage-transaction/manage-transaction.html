@@ -1,14 +1,18 @@
 <ion-header>
   <ion-toolbar>
     <ion-title *ngIf="!isUpdate"
+               class="ion-margin-top"
                size="large">Add New Transaction
     </ion-title>
     <ion-title *ngIf="isUpdate"
+               class="ion-margin-top"
                size="large">Update Transaction
     </ion-title>
     <ion-title size="small">
-      {{getSubTitle()}}
+      {{getSubTitle(data.repeat, data.type, data.interval)}}
     </ion-title>
+    <ion-title class="ion-margin-bottom"
+               size="small">{{data.startDate|date:'MMM-dd-yyyy'}} to {{data.endDate|date:'MMM-dd-yyyy'}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -79,11 +83,10 @@
         <ion-item>
           <ion-label position="floating">
             {{(sampleForm.value.repeat === 'never') ? 'Transaction Due Date' : 'Transaction Start Date'}}
-            {{data.endDate}}
           </ion-label>
           <ion-datetime [(ngModel)]="data.startDate"
-                        [max]="data.endDate ? data.endDate : maxDate"
                         [min]="minDate"
+                        [max]="maxDate"
                         displayFormat="MMM-DD-YYYY"
                         name="startDate"
                         placeholder="Select Date"
@@ -91,11 +94,13 @@
         </ion-item>
 
         <ion-item [hidden]="sampleForm.value.repeat === 'never'">
-          <ion-label position="floating">Transaction End Date</ion-label>
+          <ion-label position="floating">
+            Transaction End Date
+          </ion-label>
           <ion-datetime [(ngModel)]="data.endDate"
                         [disabled]="sampleForm.value.repeat === 'never'"
+                        [min]="minDate"
                         [max]="maxDate"
-                        [min]="data.startDate ? data.startDate : minDate"
                         displayFormat="MMM-DD-YYYY"
                         name="endDate"
                         placeholder="Select Date"

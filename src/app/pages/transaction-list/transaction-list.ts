@@ -19,6 +19,7 @@ import {BehaviorSubject, Observable, of, combineLatest} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 import {RecurringTransactions} from '../../utils/recurring-transactions';
 import {TransactionBreakupListPage} from '../transaction-breakup-list/transaction-breakup-list';
+import {getRecurringTransactionTitle} from '../../utils/mmm-utils';
 
 export interface TransactionId extends Transaction {
   id: string;
@@ -99,16 +100,20 @@ export class TransactionListPage implements OnInit {
     return {
       label: '',
       repeat: 'monthly',
-      startDate: ``,
+      startDate: null,
       interval: 1,
       amount: 0,
       type: this.transactionType,
       remarks: 'remarks',
-      endDate: ``,
+      endDate: null,
       isTaxSavings: false,
       userUid: '',
       id: '',
     };
+  }
+
+  getTransactionSubTitle(repeat, type, interval) {
+    return getRecurringTransactionTitle(repeat, type, interval);
   }
 
   async presentTransactionBreakups(transactionDetails, isUpdate: boolean, slidingItem) {

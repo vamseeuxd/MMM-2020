@@ -1,9 +1,11 @@
 <ion-header translucent="true">
   <ion-toolbar>
-    <ion-title size="large">{{data.label}} Breakups</ion-title>
-    <ion-title size="small">
-      {{getSubTitle()}}
+    <ion-title class="ion-margin-top"
+               size="large">{{data.label}}  ({{data.breakups.length}})
     </ion-title>
+    <ion-title size="small">{{getSubTitle(data.repeat, data.type, data.interval)}}</ion-title>
+    <ion-title class="ion-margin-bottom"
+               size="small">{{data.startDate|date:'MMM-dd-yyyy'}} to {{data.endDate|date:'MMM-dd-yyyy'}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
