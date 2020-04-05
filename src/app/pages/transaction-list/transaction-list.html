@@ -30,7 +30,7 @@
     </ion-list>
 
     <ion-list-header [hidden]="breakUps.length > 0">
-      No Sessions Found
+      {{transactionType == 'income' ? 'No Income details are found' : 'No Expenses details are found'}}
     </ion-list-header>
 
   </ng-container>

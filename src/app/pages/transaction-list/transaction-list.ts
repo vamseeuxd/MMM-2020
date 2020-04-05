@@ -15,7 +15,7 @@ import {AngularFireAuth} from '@angular/fire/auth';
 import {ManageTransactionPage} from '../manage-transaction/manage-transaction';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
 import {Transaction} from '../../models/Transaction';
-import {BehaviorSubject, Observable, of} from 'rxjs';
+import {BehaviorSubject, Observable, of, combineLatest} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 import {RecurringTransactions} from '../../utils/recurring-transactions';
 import {TransactionBreakupListPage} from '../transaction-breakup-list/transaction-breakup-list';
@@ -37,12 +37,13 @@ export class TransactionListPage implements OnInit {
 
   private transactionsCollection: AngularFirestoreCollection<Transaction>;
   private recurringTransactions: RecurringTransactions = new RecurringTransactions();
-  transactions$: Observable<TransactionId[]> = this.fireAuth.user.pipe(
-    switchMap(user => {
+  transactions$: Observable<TransactionId[]> = combineLatest(this.fireAuth.user, this.transactionType$).pipe(
+    switchMap(([user, transactionType]) => {
       return this.firestore.collection<Transaction>(
         'transactions',
         ref => {
-          return ref.where('userUid', '==', user.providerData[0].uid);
+          return ref.where('userUid', '==', user.providerData[0].uid)
+            .where('type', '==', transactionType);
         }
       ).snapshotChanges().pipe(
         map(actions => actions.map(a => {
@@ -82,6 +83,11 @@ export class TransactionListPage implements OnInit {
     private firestore: AngularFirestore,
     public config: Config
   ) {
+    this.fireAuth.auth.onAuthStateChanged(userDetails => {
+      if (!userDetails) {
+        this.router.navigateByUrl('/login');
+      }
+    });
     this.transactionsCollection = firestore.collection<any>('transactions');
   }
 

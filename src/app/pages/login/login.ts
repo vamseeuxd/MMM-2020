@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {Router} from '@angular/router';
 import {AngularFireAuth} from '@angular/fire/auth';
-import { auth } from 'firebase/app';
+import {auth} from 'firebase/app';
 
 @Component({
   selector: 'page-login',
@@ -16,7 +16,8 @@ export class LoginPage {
   }
 
   login() {
-    this.fireAuth.auth.signInWithPopup(new auth.GoogleAuthProvider()).then(res => console.log(res));
+    this.fireAuth.auth.signInWithPopup(new auth.GoogleAuthProvider())
+      .then(res => this.router.navigateByUrl('/app/tabs/transaction-list'));
   }
 
   logout() {

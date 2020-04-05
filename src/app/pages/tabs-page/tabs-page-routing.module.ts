@@ -7,7 +7,7 @@ import {TransactionListPage} from '../transaction-list/transaction-list';
 const routes: Routes = [
   {
     path: 'tabs',
-    component: TabsPage,
+    component: TransactionListPage,
     children: [
       {
         path: 'transaction-list',

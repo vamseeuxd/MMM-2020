@@ -7,10 +7,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ionic serve --external",
-    "build": "ng build",
+    "build": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
+    "host": "firebase deploy --only hosting:mmm-20",
     "postinstall": "webdriver-manager update --standalone false --gecko false"
   },
   "repository": {

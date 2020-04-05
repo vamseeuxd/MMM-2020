@@ -20,11 +20,11 @@ import { UserData } from './providers/user-data';
 export class AppComponent implements OnInit {
   appPages = [
     {
-      title: 'transaction-list',
+      title: 'Transaction List',
       url: '/app/tabs/transaction-list',
       icon: 'calendar'
     },
-    {
+    /*{
       title: 'Speakers',
       url: '/app/tabs/speakers',
       icon: 'people'
@@ -38,7 +38,7 @@ export class AppComponent implements OnInit {
       title: 'About',
       url: '/app/tabs/about',
       icon: 'information-circle'
-    }
+    }*/
   ];
   loggedIn = false;
   dark = false;
