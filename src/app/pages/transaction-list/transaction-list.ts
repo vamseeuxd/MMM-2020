@@ -99,13 +99,13 @@ export class TransactionListPage implements OnInit {
   getNewTransactionDetails() {
     return {
       label: '',
-      repeat: 'monthly',
-      startDate: null,
+      repeat: 'never',
+      startDate: `${new Date().getMonth() + 1}-${new Date().getDate()}-${new Date().getFullYear()}`,
       interval: 1,
-      amount: 0,
+      amount: null,
       type: this.transactionType,
       remarks: 'remarks',
-      endDate: null,
+      endDate: `${new Date().getMonth() + 1}-${new Date().getDate()}-${new Date().getFullYear()}`,
       isTaxSavings: false,
       userUid: '',
       id: '',

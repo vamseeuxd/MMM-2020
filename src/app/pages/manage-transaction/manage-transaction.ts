@@ -1,9 +1,11 @@
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {AngularFirestore, AngularFirestoreCollection} from '@angular/fire/firestore';
 import {AngularFireAuth} from '@angular/fire/auth';
 import {AlertController, LoadingController, ModalController, NavParams, ToastController} from '@ionic/angular';
 import {Transaction} from '../../models/Transaction';
 import {getRecurringTransactionTitle} from '../../utils/mmm-utils';
+import {map, switchMap} from 'rxjs/operators';
+import {forkJoin, of, Subscription} from 'rxjs';
 
 @Component({
   selector: 'page-speaker-list',
@@ -11,7 +13,8 @@ import {getRecurringTransactionTitle} from '../../utils/mmm-utils';
   styleUrls: ['./manage-transaction.scss'],
 })
 export class ManageTransactionPage {
-// ManageTransaction
+
+  @ViewChild('transactionName', {static: false}) transactionName;
   private transactionsCollection: AngularFirestoreCollection<Transaction> = this.firestore.collection<any>('transactions');
   data: Transaction;
   isUpdate = false;
@@ -30,6 +33,11 @@ export class ManageTransactionPage {
     this.data = this.navParams.get('transactionDetails') as Transaction;
     this.isUpdate = this.navParams.get('isUpdate');
     this.setMinMaxDates();
+  }
+
+  ionViewDidEnter() {
+    console.log('ionViewDidEnter', this.transactionName);
+    this.transactionName.setFocus();
   }
 
   setMinMaxDates() {
@@ -151,7 +159,7 @@ export class ManageTransactionPage {
   }
 
   async saveData(item: any, userUid) {
-    if (new Date(item.startDate) <= new Date(item.endDate)) {
+    if (new Date(item.startDate) <= new Date(item.endDate) || item.repeat === 'never') {
       const alert = await this.alertController.create({
         header: 'Save Confirmation',
         message: 'Are you sure! do you want to save this Transaction?',
@@ -226,21 +234,31 @@ export class ManageTransactionPage {
           handler: async () => {
             const loading = await this.loadingController.create({message: 'Please wait...'});
             await loading.present();
-            this.transactionsCollection.doc(this.data.id).delete().then(async value => {
-              await loading.dismiss();
-              this.dismiss(this.data);
-              const toast = await this.toastCtrl.create({
-                header: `New Transaction was successfully Deleted.`,
-                duration: 3000,
-                buttons: [{
-                  text: 'Close',
-                  role: 'cancel'
-                }]
-              });
-              await toast.present();
-            }, async reason => {
-              await loading.dismiss();
-              console.log(reason);
+            const deleteSettlementsSubscription: Subscription = this.deleteSettlements(this.data.id).subscribe(value0 => {
+              this.transactionsCollection.doc(this.data.id).delete()
+                .then(
+                  async value => {
+                    console.log('deleteTransaction');
+                    deleteSettlementsSubscription.unsubscribe();
+                    await loading.dismiss();
+                    this.dismiss(this.data);
+                    const toast = await this.toastCtrl.create({
+                      header: `New Transaction was successfully Deleted.`,
+                      duration: 3000,
+                      buttons: [{
+                        text: 'Close',
+                        role: 'cancel'
+                      }]
+                    });
+                    await toast.present();
+                  }, async reason => {
+                    await loading.dismiss();
+                    console.log(reason);
+                  }
+                );
+            }, error => {
+              deleteSettlementsSubscription.unsubscribe();
+              console.log(error);
             });
           }
         }
@@ -249,4 +267,23 @@ export class ManageTransactionPage {
     await alert.present();
 
   }
+
+  deleteSettlements(transactionId: string) {
+    return this.firestore.collection(
+      'settlements',
+      ref => ref.where('transactionId', '==', transactionId)
+    ).snapshotChanges().pipe(
+      switchMap(settlements => {
+        return forkJoin(settlements.map(settlement => {
+          return of(settlement.payload.doc.ref.delete());
+        }));
+      }),
+    );
+  }
+
 }
+
+
+/*const data = settlement.payload.doc.data();
+const id = settlement.payload.doc.id;
+return {id, ...data};*/

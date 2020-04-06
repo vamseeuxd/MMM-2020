@@ -2,11 +2,11 @@
   <ion-toolbar>
     <ion-title *ngIf="!isUpdate"
                class="ion-margin-top"
-               size="large">Add New Transaction
+               size="large">Add New {{data.type|uppercase}}
     </ion-title>
     <ion-title *ngIf="isUpdate"
                class="ion-margin-top"
-               size="large">Update Transaction
+               size="large">Update {{data.type|uppercase}}
     </ion-title>
     <ion-title size="small">
       {{getSubTitle(data.repeat, data.type, data.interval)}}
@@ -23,27 +23,32 @@
       <ion-list>
 
         <ion-item>
-          <ion-label position="floating">Transaction Type</ion-label>
-          <ion-select [(ngModel)]="data.type"
-                      name="type"
-                      placeholder="Select One"
-                      required>
-            <ion-select-option value="income">Income</ion-select-option>
-            <ion-select-option value="expenses">Expenses</ion-select-option>
-          </ion-select>
+          <ion-segment [(ngModel)]="data.type"
+                       name="type"
+                       required>
+            <ion-segment-button value="income">
+              <ion-label>Income</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="expenses">
+              <ion-label>Expenses</ion-label>
+            </ion-segment-button>
+          </ion-segment>
         </ion-item>
 
         <ion-item>
-          <ion-label position="floating">Transaction Name</ion-label>
+          <ion-label position="floating">{{data.type|uppercase}} Name</ion-label>
           <ion-input [(ngModel)]="data.label"
                      name="label"
+                     #transactionName
+                     autofocus="true"
                      required></ion-input>
         </ion-item>
 
         <ion-item>
-          <ion-label position="floating">Transaction Amount</ion-label>
+          <ion-label position="floating">{{data.type|uppercase}} Amount</ion-label>
           <ion-input [(ngModel)]="data.amount"
                      name="amount"
+                     #amountInput
                      required
                      type="number"></ion-input>
         </ion-item>
@@ -53,6 +58,7 @@
           <ion-select (ionChange)="resetInterval(intervalController)"
                       [(ngModel)]="data.repeat"
                       name="repeat"
+                      #repeatInput
                       placeholder="Select One"
                       required>
             <ion-select-option value="never">Never Repeat</ion-select-option>
@@ -73,6 +79,7 @@
                       [(ngModel)]="data.interval"
                       [disabled]="sampleForm.value.repeat === 'never'"
                       name="interval"
+                      #intervalInput
                       placeholder="Select Interval"
                       required>
             <ion-select-option *ngFor="let option of getIntervalOptions(sampleForm.value.repeat)"
@@ -82,11 +89,12 @@
 
         <ion-item>
           <ion-label position="floating">
-            {{(sampleForm.value.repeat === 'never') ? 'Transaction Due Date' : 'Transaction Start Date'}}
+            {{data.type|uppercase}} {{(sampleForm.value.repeat === 'never') ? ' Due Date' : ' Start Date'}}
           </ion-label>
           <ion-datetime [(ngModel)]="data.startDate"
                         [min]="minDate"
                         [max]="maxDate"
+                        #startDateInput
                         displayFormat="MMM-DD-YYYY"
                         name="startDate"
                         placeholder="Select Date"
@@ -95,11 +103,12 @@
 
         <ion-item [hidden]="sampleForm.value.repeat === 'never'">
           <ion-label position="floating">
-            Transaction End Date
+            {{data.type|uppercase}} End Date
           </ion-label>
           <ion-datetime [(ngModel)]="data.endDate"
                         [disabled]="sampleForm.value.repeat === 'never'"
                         [min]="minDate"
+                        #endDateInput
                         [max]="maxDate"
                         displayFormat="MMM-DD-YYYY"
                         name="endDate"
@@ -115,8 +124,9 @@
 
 
         <ion-item>
-          <ion-label position="floating">Transaction Remarks</ion-label>
+          <ion-label position="floating">{{data.type|uppercase}} Remarks</ion-label>
           <ion-textarea [(ngModel)]="data.remarks"
+                        #remarksInput
                         name="remarks"></ion-textarea>
         </ion-item>
 
