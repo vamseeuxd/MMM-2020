@@ -21,12 +21,12 @@ export class AppComponent implements OnInit {
   appPages = [
     {
       title: 'All Transactions',
-      url: '/app/tabs/transaction-list',
+      url: 'transaction-list',
       icon: 'calendar'
     },
     {
       title: 'Monthly Transactions',
-      url: '/app/tabs/speakers',
+      url: 'monthly-transactions',
       icon: 'people'
     },
     /*{

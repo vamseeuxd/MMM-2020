@@ -1,7 +1,8 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {CheckTutorial} from './providers/check-tutorial.service';
-import {AngularFireAuthGuard} from '@angular/fire/auth-guard';
+import {TransactionListPage} from './pages/transaction-list/transaction-list';
+import {LoginPage} from './pages/login/login';
+import {MonthlyTransactionsPage} from './pages/monthly-transactions/monthly-transactions';
 
 const routes: Routes = [
   {
@@ -10,32 +11,17 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'account',
-    canActivate: [AngularFireAuthGuard],
-    loadChildren: () => import('./pages/account/account.module').then(m => m.AccountModule)
-  },
-  {
-    path: 'support',
-    canActivate: [AngularFireAuthGuard],
-    loadChildren: () => import('./pages/support/support.module').then(m => m.SupportModule)
-  },
-  {
     path: 'login',
-    loadChildren: () => import('./pages/login/login.module').then(m => m.LoginModule)
+    component: LoginPage
   },
   {
-    path: 'signup',
-    loadChildren: () => import('./pages/signup/signup.module').then(m => m.SignUpModule)
+    path: 'transaction-list',
+    component: TransactionListPage
   },
   {
-    path: 'app',
-    loadChildren: () => import('./pages/tabs-page/tabs-page.module').then(m => m.TabsModule)
+    path: 'monthly-transactions',
+    component: MonthlyTransactionsPage
   },
-  {
-    path: 'tutorial',
-    loadChildren: () => import('./pages/tutorial/tutorial.module').then(m => m.TutorialModule),
-    canLoad: [CheckTutorial]
-  }
 ];
 
 @NgModule({

@@ -1,0 +1,88 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+    <ion-title>{{selectedMonthLabel(selectedMonth)}} - {{selectedYear}} {{selectedType|lowercase}} details</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ng-container *ngIf="breakups$ | async as breakups">
+    <ion-list [hidden]="breakups.length == 0">
+      <ion-item *ngFor="let breakup of breakups">
+        <ion-label>
+          <ion-row>
+            <ion-col>
+              <ion-text color="dark">
+                <h2>
+                  <strong>{{breakup.label}}</strong>
+                </h2>
+              </ion-text>
+              <ion-text color="medium">
+                <p>{{breakup.type}}</p>
+              </ion-text>
+            </ion-col>
+            <ion-col>
+              <ion-text align="right"
+                        color="medium">
+                <p>{{breakup.dueOn|date:'MMM dd yyyy'}}</p>
+              </ion-text>
+              <ion-text [color]="breakup.isSettled?'success':'danger'"
+                        align="right">
+                <h2><strong>{{breakup.amount|currency}}</strong></h2>
+              </ion-text>
+            </ion-col>
+          </ion-row>
+        </ion-label>
+        <ion-toggle (ionChange)="updateSettlement(breakup)"
+                    [(ngModel)]="breakup.isSettled"
+                    color="success"
+                    mode="ios"
+                    slot="start"></ion-toggle>
+      </ion-item>
+    </ion-list>
+
+    <ion-list-header [hidden]="breakups.length > 0">
+      {{selectedType == 'income' ? 'No Income details are found' : 'No Expenses details are found'}}
+    </ion-list-header>
+
+  </ng-container>
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar color="primary">
+    <ion-segment #yearsSegment
+                 (ionChange)="showLoadingIndicator();selectedYearAction.next(selectedYear)"
+                 [(ngModel)]="selectedYear"
+                 scrollable>
+      <ion-segment-button *ngFor="let year of years"
+                          [id]="'monthly-transactions-'+year.id"
+                          [value]="year.id">
+        <ion-label>{{year.label}}</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+    <ion-segment (ionChange)="showLoadingIndicator();selectedMonthAction.next(selectedMonth)"
+                 [(ngModel)]="selectedMonth"
+                 scrollable>
+      <ion-segment-button *ngFor="let month of months"
+                          [id]="'monthly-transactions-'+month.id"
+                          [value]="month.id">
+        <ion-label>{{month.label}}</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+    <ion-segment
+      (ionChange)="showLoadingIndicator();selectedTypeAction.next(selectedType)"
+      [(ngModel)]="selectedType">
+      <ion-segment-button value="income">
+        <ion-label>Income</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="expenses">
+        <ion-label>Expenses</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-footer>

@@ -13,7 +13,7 @@ export class RecurringTransactions {
       return {
         label: transaction.label,
         amount: transaction.amount,
-        id: transaction.id,
+        transactionId: transaction.id,
         type: transaction.type,
         dueOn: `${tempDate.getMonth() + 1}-${tempDate.getDate()}-${tempDate.getFullYear()}`,
         isSettled: false

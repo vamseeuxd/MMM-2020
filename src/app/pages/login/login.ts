@@ -17,7 +17,7 @@ export class LoginPage {
 
   login() {
     this.fireAuth.auth.signInWithPopup(new auth.GoogleAuthProvider())
-      .then(res => this.router.navigateByUrl('/app/tabs/transaction-list'));
+      .then(res => this.router.navigateByUrl('/transaction-list'));
   }
 
   logout() {
